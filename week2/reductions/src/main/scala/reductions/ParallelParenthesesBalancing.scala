@@ -15,7 +15,7 @@ object ParallelParenthesesBalancingRunner {
     Key.exec.maxWarmupRuns -> 80,
     Key.exec.benchRuns -> 120,
     Key.verbose -> true
-  ) withWarmer(new Warmer.Default)
+  ) withWarmer (new Warmer.Default)
 
   def main(args: Array[String]): Unit = {
     val length = 100000000
@@ -39,37 +39,56 @@ object ParallelParenthesesBalancingRunner {
 object ParallelParenthesesBalancing {
 
   /** Returns `true` iff the parentheses in the input `chars` are balanced.
-   */
+    */
   def balance(chars: Array[Char]): Boolean = {
-    def balance_impl(acc: String, chars: Array[Char]): Boolean = {
-      if (chars.isEmpty)
-        acc.isEmpty()
-      else if (chars.head.equals('('))
-        balance_impl( acc + "(", chars.tail)
-      else if (chars.head.equals(')'))
-        if(acc.isEmpty)
-          return false
-        else
-          balance_impl(acc.dropRight(1), chars.tail)
+    def balance_impl(acc: Int, currentIndex: Int): Boolean = {
+      if (currentIndex >= chars.length)
+        acc == 0
+      else if (acc < 0)
+        return false
+      else if (chars.charAt(currentIndex).equals('('))
+        balance_impl(acc + 1, currentIndex + 1)
+      else if (chars.charAt(currentIndex).equals(')'))
+        balance_impl(acc - 1, currentIndex + 1)
       else
-        balance_impl( acc, chars.tail)
+        balance_impl(acc, currentIndex + 1)
     }
 
-    balance_impl("", chars)
+    balance_impl(0, 0)
   }
+
   /** Returns `true` if the parentheses in the input `chars` are balanced.
-   */
+    */
   def parBalance(chars: Array[Char], threshold: Int): Boolean = {
 
-    def traverse(idx: Int, until: Int, arg1: Int, arg2: Int) /*: ???*/ = {
-      ???
+    def traverse(idx: Int, until: Int, open: Int, close: Int): (Int, Int) = {
+
+      if (idx >= until)
+        return (open, close)
+      else if (chars.charAt(idx).equals('('))
+        traverse(idx + 1, until, open + 1, close)
+      else if (chars.charAt(idx).equals(')'))
+        if (open > 0)
+          traverse(idx + 1, until, open - 1, close)
+        else
+          traverse(idx + 1, until, open, close - 1)
+      else
+        traverse(idx + 1, until, open, close)
     }
 
-    def reduce(from: Int, until: Int) /*: ???*/ = {
-      ???
+    def reduce(from: Int, until: Int): (Int, Int) = {
+      if (until - from <= threshold)
+        traverse(from, until, 0, 0)
+      else {
+        val mid = from + (until - from) / 2
+        val ((open1, close1), (open2, close2)) = parallel(reduce(from, mid),
+          reduce(mid, until))
+
+        return (open1 + close2 + open2, close1)
+      }
     }
 
-    reduce(0, chars.length) == ???
+    reduce(0, chars.length) == (0, 0)
   }
 
   // For those who want more:

@@ -45,5 +45,38 @@ class ParallelParenthesesBalancingSuite extends FunSuite {
     check(").", false)
   }
 
+  test("parBalance should work for nested parentheses and threshold 1") {
+    def check(input: String, threshold: Int, expected: Boolean) =
+      assert(parBalance(input.toArray, threshold) == expected,
+        s"balance($input) should be $expected")
+
+    check("(())", 1, true)
+  }
+
+  test("parBalance should work for string of length 2 and threshold 1") {
+    def check(input: String, threshold: Int, expected: Boolean) =
+      assert(parBalance(input.toArray, threshold) == expected,
+        s"balance($input) should be $expected")
+
+    check("()", 1, true)
+  }
+
+  test("parBalance should invoke the parallel construct 7 times for string '()()()()' and threshold 1") {
+    def check(input: String, threshold: Int, expected: Boolean) =
+      assert(parBalance(input.toArray, threshold) == expected,
+        s"balance($input) should be $expected")
+
+    check("()()()()", 1, true)
+  }
+
+  test("parBalance should be false for string of length 2 and threshold 1") {
+    def check(input: String, threshold: Int, expected: Boolean) =
+      assert(parBalance(input.toArray, threshold) == expected,
+        s"balance($input) should be $expected")
+
+    check(")(", 1, false)
+    check(")()(", 1, false)
+    check("(()())", 1, true)
+  }
 
 }
