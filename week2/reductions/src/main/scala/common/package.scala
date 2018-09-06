@@ -38,8 +38,9 @@ package object common {
   def task[T](body: => T): ForkJoinTask[T] = {
     scheduler.value.schedule(body)
   }
-
+  var counter = 0;
   def parallel[A, B](taskA: => A, taskB: => B): (A, B) = {
+    counter = counter + 1
     scheduler.value.parallel(taskA, taskB)
   }
 

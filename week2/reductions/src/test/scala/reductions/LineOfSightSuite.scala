@@ -8,9 +8,11 @@ import org.scalatest.junit.JUnitRunner
 import common._
 import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory
 
-@RunWith(classOf[JUnitRunner]) 
+@RunWith(classOf[JUnitRunner])
 class LineOfSightSuite extends FunSuite {
+
   import LineOfSight._
+
   test("lineOfSight should correctly handle an array of size 4") {
     val output = new Array[Float](4)
     lineOfSight(Array[Float](0f, 1f, 8f, 9f), output)
@@ -30,5 +32,10 @@ class LineOfSightSuite extends FunSuite {
     assert(output.toList == List(0f, 1f, 4f, 4f))
   }
 
+  test("parLineOfSight should invoke the parallel construct 30 times (15 times" +
+    " during upsweep and 15 times during downsweep) for an array of size 17, with threshold 1") {
+    val output = new Array[Float](4)
+    parLineOfSight(Array[Float](0f, 1f, 8f, 9f, 10f, 11f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f), output, 1)
+  }
 }
 
