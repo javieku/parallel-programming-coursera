@@ -9,6 +9,7 @@ import common._
 import scala.math._
 
 object KM extends KMeans
+
 import KM._
 
 @RunWith(classOf[JUnitRunner])
@@ -67,8 +68,29 @@ class KMeansSuite extends FunSuite {
   test("'classify with data parallelism should work for empty 'points' and empty 'means'") {
     val points: GenSeq[Point] = IndexedSeq()
     val means: GenSeq[Point] = IndexedSeq()
-    val expected = GenMap[Point,GenSeq[Point]]()
+    val expected = GenMap[Point, GenSeq[Point]]()
     checkParClassify(points, means, expected)
+  }
+
+  def checkKMeans(points: GenSeq[Point], means: GenSeq[Point], eta: Double, expected: GenSeq[Point]) {
+    assert(kMeans(points, means, eta) == expected,
+      s"kMeans($points, $means, $eta) should equal to $expected")
+  }
+
+  test("'kMeans' should work for 'points' == GenSeq((0, 0, 1), (0,0, -1), (0,1,0), (0,10,0)) and 'oldMeans' == GenSeq((0, -1, 0), (0, 2, 0)) and 'eta' == 12.25") {
+    val p1 = new Point(0, 0, 1)
+    val p2 = new Point(0, 0, -1)
+    val p3 = new Point(0, 1, 0)
+    val p4 = new Point(0, 10, 0)
+    val points: GenSeq[Point] = IndexedSeq(p1, p2, p3, p4)
+    val mean1 = new Point(0, -1, 0)
+    val mean2 = new Point(0, 2, 0)
+    val means: GenSeq[Point] = IndexedSeq(mean1, mean2)
+    val eta = 12.25
+    val exp_p1 = new Point(0, 0, 0)
+    val exp_p2 = new Point(0, 5.5, 0)
+    val expected: GenSeq[Point] = IndexedSeq(exp_p1, exp_p2)
+    checkKMeans(points, means, eta, expected)
   }
 
 }
